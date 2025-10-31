@@ -47,7 +47,7 @@ export function Header() {
     >
       <div
         className={cn(
-          "border border-slate-900/5 flex w-full max-w-5xl items-center justify-between gap-4 rounded-[28px] bg-slate-900/5 px-4 py-3 text-white/90 backdrop-blur-2xl transition-all duration-250 sm:gap-6 sm:px-6",
+          "border border-slate-900/5 flex w-full max-w-5xl flex-col items-stretch gap-4 rounded-[28px] bg-slate-900/5 px-4 py-3 text-white/90 backdrop-blur-2xl transition-all duration-250 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6",
           isMounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4",
           isScrolled &&
             "border-white/20 bg-slate-900/5 shadow-[0_14px_32px_rgba(15,23,42,0.55)] backdrop-blur-[28px]"
@@ -57,7 +57,10 @@ export function Header() {
           type="button"
           onClick={() => router.push("/")}
           aria-label="Ir para dashboard"
-          className="flex shrink-0 items-center gap-3 rounded-full bg-white/10 px-3 py-2 text-left transition-all duration-250 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          className={cn(
+            "flex items-center gap-3 rounded-full bg-white/10 px-3 py-2 text-left transition-all duration-250 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/70",
+            "w-full sm:w-auto"
+          )}
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-transform duration-250">
             <svg
@@ -83,7 +86,10 @@ export function Header() {
           </div>
         </button>
 
-        <nav aria-label="Navegacao principal" className="flex items-center gap-1 sm:gap-2">
+        <nav
+          aria-label="Navegacao principal"
+          className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end sm:gap-2"
+        >
           {NAV_ITEMS.map((item, index) => {
             const active = isActivePath(pathname, item.href);
 
@@ -97,9 +103,12 @@ export function Header() {
                   transitionDelay: isMounted ? `${index * 80 + 120}ms` : "0ms",
                 }}
                 className={cn(
-                  "border rounded-full px-4 py-2 text-sm font-medium text-white/70 transition-all duration-50 ease-out focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/60",
+                  "inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-medium text-white/70 transition-all duration-50 ease-out focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/60",
+                  "w-full sm:w-auto",
                   isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
-                  active ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-200 shadow-[0_0_14px_rgba(34,211,238,0.25)]" : "border-white/10 bg-white/[0.02] text-slate-300 hover:border-cyan-500/30 hover:text-cyan-200"
+                  active
+                    ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-200 shadow-[0_0_14px_rgba(34,211,238,0.25)]"
+                    : "border-white/10 bg-white/[0.02] text-slate-300 hover:border-cyan-500/30 hover:text-cyan-200"
                 )}
               >
                 {item.label}

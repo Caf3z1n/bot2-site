@@ -162,11 +162,11 @@ const normalizeAsset = (raw: Record<string, unknown>): Asset | null => {
 };
 
 const LoadingState = () => (
-  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+  <div className="grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-3">
     {Array.from({ length: 6 }).map((_, index) => (
       <div
         key={index}
-        className="h-52 animate-pulse rounded-3xl border border-white/5 bg-slate-900/70 shadow-[0_18px_40px_rgba(15,23,42,0.35)]"
+        className="h-52 w-full animate-pulse rounded-3xl border border-white/5 bg-slate-900/70 shadow-[0_18px_40px_rgba(15,23,42,0.35)]"
       />
     ))}
   </div>
@@ -240,7 +240,7 @@ export default function HomePage() {
                 {error}
               </div>
             ) : hasAssets ? (
-              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {assets.map((asset) => {
                   const side = asset.side ? sideMap[asset.side.toLowerCase()] ?? asset.side : null;
                   const sideLabel = side ? side.toUpperCase() : null;
@@ -257,114 +257,113 @@ export default function HomePage() {
                   return (
                     <article
                       key={asset.symbol}
-                      className="group relative flex flex-col rounded-3xl border border-white/5 bg-slate-900/70 p-6 shadow-[0_18px_40px_rgba(15,23,42,0.45)] transition-transform duration-200 hover:-translate-y-1 hover:bg-slate-900"
-                  >
-                    <div className="text-xs text-slate-500">
-                      <span>{asset.candleCrossTimeBr ? `Cruzamento ${asset.candleCrossTimeBr}` : "Sem agendamento"}</span>
-                    </div>
-
-                    <div className="mt-4 flex items-start justify-between gap-3">
-                      <div className="flex flex-col gap-2">
-                        <a
-                          href={binanceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-base font-semibold uppercase tracking-widest text-white/70 transition hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-cyan-200"
-                          title={`Abrir ${asset.symbol} na Binance`}
-                        >
-                          {asset.symbol}
-                        </a>
+                      className="group relative flex w-full flex-col rounded-3xl border border-white/5 bg-slate-900/70 p-6 shadow-[0_18px_40px_rgba(15,23,42,0.45)] transition-transform duration-200 hover:-translate-y-1 hover:bg-slate-900"
+                    >
+                      <div className="text-xs text-slate-500">
+                        <span>{asset.candleCrossTimeBr ? `Cruzamento ${asset.candleCrossTimeBr}` : "Sem agendamento"}</span>
                       </div>
-                      <span className="text-3xl font-bold tracking-tight">{toPrice(asset.currentPrice)}</span>
-                    </div>
 
-                    <div className="mt-6 space-y-3 text-sm">
-                      {isAwaitingPullback ? (
-                        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Trigger Price</p>
-                          <span
-                            className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${awaitingPullbackTone}`}
+                      <div className="mt-4 flex items-start justify-between gap-3">
+                        <div className="flex flex-col gap-2">
+                          <a
+                            href={binanceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-base font-semibold uppercase tracking-widest text-white/70 transition hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-cyan-200"
+                            title={`Abrir ${asset.symbol} na Binance`}
                           >
-                            {toPrice(asset.triggerPrice)}
-                          </span>
+                            {asset.symbol}
+                          </a>
                         </div>
-                      ) : (
-                        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</p>
-                          <span
-                            className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${statusTone(
-                              asset.status,
-                            )}`}
-                          >
-                            {toStatusLabel(asset.status)}
-                          </span>
-                        </div>
-                      )}
+                        <span className="text-3xl font-bold tracking-tight">{toPrice(asset.currentPrice)}</span>
+                      </div>
 
-                      {isAwaitingPullback ? (
-                        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Side</p>
-                          <span
-                            className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${sideTone(
-                              asset.side,
-                            )}`}
-                          >
-                            {sideLabel ?? "SEM SIDE"}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tendencia EMA</p>
-                          <span
-                            className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${trendTone(
-                              asset.emaTrendStatus,
-                            )}`}
-                          >
-                            {asset.emaTrendStatus ?? "Sem tendencia"}
-                          </span>
-                        </div>
-                      )}
-
-                      {isAwaitingPullback ? (
-                        <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Trigger Diff (%)</p>
-                            <span className="text-[0.65rem] uppercase text-slate-500">Preco atual vs trigger</span>
+                      <div className="mt-6 space-y-3 text-sm">
+                        {isAwaitingPullback ? (
+                          <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Trigger Price</p>
+                            <span
+                              className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${awaitingPullbackTone}`}
+                            >
+                              {toPrice(asset.triggerPrice)}
+                            </span>
                           </div>
-                          <span
-                            className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${awaitingPullbackTone}`}
-                          >
-                            {toPercent(triggerDiffPercent)}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
-                          <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Diferenca EMA</p>
-                            <span className="text-[0.65rem] uppercase text-slate-500">Comparacao entre medias</span>
+                        ) : (
+                          <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</p>
+                            <span
+                              className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${statusTone(
+                                asset.status,
+                              )}`}
+                            >
+                              {toStatusLabel(asset.status)}
+                            </span>
                           </div>
-                          <span
-                            className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${diffTone(
-                              asset.emaDiffPercent,
-                            )}`}
-                          >
-                            {toPercent(asset.emaDiffPercent)}
-                          </span>
-                        </div>
-                      )}
+                        )}
 
-                    </div>
+                        {isAwaitingPullback ? (
+                          <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Side</p>
+                            <span
+                              className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${sideTone(
+                                asset.side,
+                              )}`}
+                            >
+                              {sideLabel ?? "SEM SIDE"}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tendencia EMA</p>
+                            <span
+                              className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-sm font-semibold ${trendTone(
+                                asset.emaTrendStatus,
+                              )}`}
+                            >
+                              {asset.emaTrendStatus ?? "Sem tendencia"}
+                            </span>
+                          </div>
+                        )}
 
-                    <footer className="mt-6 border-t border-white/5 pt-4 text-xs text-slate-500">
-                      <p>{asset.updatedAtBr ? `Atualizado ${asset.updatedAtBr}` : "Sem horario atualizado"}</p>
-                    </footer>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-12 text-center text-sm text-slate-300">
-              Nenhum asset disponivel no momento.
+                        {isAwaitingPullback ? (
+                          <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Trigger Diff (%)</p>
+                              <span className="text-[0.65rem] uppercase text-slate-500">Preco atual vs trigger</span>
+                            </div>
+                            <span
+                              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${awaitingPullbackTone}`}
+                            >
+                              {toPercent(triggerDiffPercent)}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Diferenca EMA</p>
+                              <span className="text-[0.65rem] uppercase text-slate-500">Comparacao entre medias</span>
+                            </div>
+                            <span
+                              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${diffTone(
+                                asset.emaDiffPercent,
+                              )}`}
+                            >
+                              {toPercent(asset.emaDiffPercent)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <footer className="mt-6 border-t border-white/5 pt-4 text-xs text-slate-500">
+                        <p>{asset.updatedAtBr ? `Atualizado ${asset.updatedAtBr}` : "Sem horario atualizado"}</p>
+                      </footer>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-12 text-center text-sm text-slate-300">
+                Nenhum asset disponivel no momento.
             </div>
           )}
         </section>
