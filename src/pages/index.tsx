@@ -242,21 +242,22 @@ export default function HomePage() {
             ) : hasAssets ? (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {assets.map((asset) => {
-                const side = asset.side ? sideMap[asset.side.toLowerCase()] ?? asset.side : null;
-                const sideLabel = side ? side.toUpperCase() : null;
-                const normalizedStatus = asset.status ? asset.status.toLowerCase() : null;
-                const isAwaitingPullback = normalizedStatus === "awaiting_pullback";
-                const awaitingPullbackTone =
-                  statusMap["awaiting_pullback"]?.tone ?? "text-slate-300 border-white/15 bg-white/[0.04]";
-                const triggerDiffPercent =
-                  asset.triggerPrice !== null && asset.currentPrice !== null && asset.currentPrice !== 0
-                    ? ((asset.triggerPrice - asset.currentPrice) / asset.currentPrice) * 100
-                    : null;
+                  const side = asset.side ? sideMap[asset.side.toLowerCase()] ?? asset.side : null;
+                  const sideLabel = side ? side.toUpperCase() : null;
+                  const normalizedStatus = asset.status ? asset.status.toLowerCase() : null;
+                  const isAwaitingPullback = normalizedStatus === "awaiting_pullback";
+                  const awaitingPullbackTone =
+                    statusMap["awaiting_pullback"]?.tone ?? "text-slate-300 border-white/15 bg-white/[0.04]";
+                  const triggerDiffPercent =
+                    asset.triggerPrice !== null && asset.currentPrice !== null && asset.currentPrice !== 0
+                      ? ((asset.triggerPrice - asset.currentPrice) / asset.currentPrice) * 100
+                      : null;
+                  const binanceUrl = `https://www.binance.com/pt/futures/${encodeURIComponent(asset.symbol)}`;
 
-                return (
-                  <article
-                    key={asset.symbol}
-                    className="group relative flex flex-col rounded-3xl border border-white/5 bg-slate-900/70 p-6 shadow-[0_18px_40px_rgba(15,23,42,0.45)] transition-transform duration-200 hover:-translate-y-1 hover:bg-slate-900"
+                  return (
+                    <article
+                      key={asset.symbol}
+                      className="group relative flex flex-col rounded-3xl border border-white/5 bg-slate-900/70 p-6 shadow-[0_18px_40px_rgba(15,23,42,0.45)] transition-transform duration-200 hover:-translate-y-1 hover:bg-slate-900"
                   >
                     <div className="text-xs text-slate-500">
                       <span>{asset.candleCrossTimeBr ? `Cruzamento ${asset.candleCrossTimeBr}` : "Sem agendamento"}</span>
@@ -264,9 +265,15 @@ export default function HomePage() {
 
                     <div className="mt-4 flex items-start justify-between gap-3">
                       <div className="flex flex-col gap-2">
-                        <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-base font-semibold uppercase tracking-widest text-white/70">
+                        <a
+                          href={binanceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-base font-semibold uppercase tracking-widest text-white/70 transition hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-cyan-200"
+                          title={`Abrir ${asset.symbol} na Binance`}
+                        >
                           {asset.symbol}
-                        </span>
+                        </a>
                       </div>
                       <span className="text-3xl font-bold tracking-tight">{toPrice(asset.currentPrice)}</span>
                     </div>
