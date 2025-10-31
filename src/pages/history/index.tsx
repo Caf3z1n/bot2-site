@@ -1,4 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import Head from "next/head";
+import { useEffect, useMemo, useState } from "react";
 
 type Status = "PROFIT" | "LOSS" | "MANUAL" | "-";
 type MetricTone = "positive" | "negative" | "neutral";
@@ -227,7 +228,7 @@ export default function HistoryPage() {
       } catch (err) {
         console.error(err);
         setTrades([]);
-        setError("Não foi possível carregar as posições. Tente novamente mais tarde.");
+        setError("N�o foi poss�vel carregar as posi��es. Tente novamente mais tarde.");
       } finally {
         setLoading(false);
       }
@@ -375,11 +376,11 @@ export default function HistoryPage() {
     {
       label: "Trades abertos",
       value: String(openTrades),
-      helper: openTrades ? "Ainda em execução" : "Nenhum trade em aberto",
+      helper: openTrades ? "Ainda em execu��o" : "Nenhum trade em aberto",
       tone: "neutral",
     },
     {
-      label: "PnL médio por trade",
+      label: "PnL m�dio por trade",
       value: totalTrades ? formatCurrency(averagePnl) : "-",
       helper: totalTrades ? `Baseado em ${totalTrades} trades` : "Sem dados suficientes",
       tone: averagePnl > 0 ? "positive" : averagePnl < 0 ? "negative" : "neutral",
@@ -418,7 +419,11 @@ export default function HistoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-10">
+    <>
+      <Head>
+        <title>BOT 2 | Historico</title>
+      </Head>
+      <main className="min-h-screen bg-slate-950 px-4 py-10">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-[1px] text-white shadow-[0_35px_90px_rgba(15,23,42,0.6)]">
           <div className="flex flex-col gap-8 rounded-[1.5rem] bg-gradient-to-br from-slate-950/95 via-slate-900/75 to-indigo-950/75 p-8">
@@ -428,9 +433,9 @@ export default function HistoryPage() {
                   Painel de desempenho
                 </span>
                 <div>
-                  <h1 className="text-3xl font-semibold text-white sm:text-4xl">Histórico de Trades</h1>
+                  <h1 className="text-3xl font-semibold text-white sm:text-4xl">Hist�rico de Trades</h1>
                   <p className="mt-2 max-w-xl text-sm text-white/70">
-                    Métricas em tempo real a partir dos dados da API para acompanhar desempenho, taxas e oportunidades.
+                    M�tricas em tempo real a partir dos dados da API para acompanhar desempenho, taxas e oportunidades.
                   </p>
                 </div>
               </div>
@@ -551,7 +556,7 @@ export default function HistoryPage() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar posições..."
+                  placeholder="Buscar posic�o~es..."
                   className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:bg-transparent"
                 />
               </div>
@@ -652,7 +657,7 @@ export default function HistoryPage() {
                   </span>
                   <p className="text-sm font-semibold text-slate-100">Nenhum trade encontrado</p>
                   <p className="text-xs text-slate-400">
-                    Ajuste os filtros ou limpe a busca para visualizar novas posições.
+                    Ajuste os filtros ou limpe a busca para visualizar novas posi��es.
                   </p>
                 </div>
               )}
@@ -676,7 +681,7 @@ export default function HistoryPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">Detalhes da posição</p>
+                <p className="text-xs uppercase tracking-wide text-slate-400">Detalhes da posi��o</p>
                 <h2 id="trade-detail-title" className="mt-2 text-2xl font-semibold text-white">
                   {selectedTrade.symbol}
                 </h2>
@@ -782,7 +787,7 @@ export default function HistoryPage() {
             </div>
 
             <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white/80">
-              <span>PnL total da posição</span>
+              <span>PnL total da posi��o</span>
               <span
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${
                   (toNumberOrNull(selectedTrade.pnl) ?? 0) >= 0
@@ -795,7 +800,7 @@ export default function HistoryPage() {
             </div>
 
             <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white/80">
-              <span>Slippage da posição</span>
+              <span>Slippage da posi��o</span>
               <span
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${slippageBadgeClass}`}
               >
@@ -805,9 +810,12 @@ export default function HistoryPage() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </>
   );
 }
+
+
 
 
 

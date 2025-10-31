@@ -1,5 +1,6 @@
 "use client";
 
+import Head from "next/head";
 import { useEffect, useState } from "react";
 
 type Asset = {
@@ -134,6 +135,15 @@ const parseString = (value: unknown): string | null => {
   return null;
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const getAssetList = (payload: unknown): unknown[] => {
+  if (Array.isArray(payload)) return payload;
+  if (isRecord(payload) && Array.isArray(payload.assets)) return payload.assets as unknown[];
+  return [];
+};
+
 const normalizeAsset = (raw: Record<string, unknown>): Asset | null => {
   const symbol = parseString(raw.symbol);
   if (!symbol) return null;
@@ -176,11 +186,11 @@ export default function HomePage() {
         setError(null);
         const res = await fetch("https://api.bot2.eticasistemas.com.br/assets", { signal: controller.signal });
         if (!res.ok) throw new Error("Erro ao carregar assets");
-        const data = await res.json();
-        const list = Array.isArray(data?.assets) ? data.assets : Array.isArray(data) ? data : [];
+        const data: unknown = await res.json();
+        const list = getAssetList(data);
         const normalized = list
-          .map((item: any) => (item && typeof item === "object" ? normalizeAsset(item as Record<string, unknown>) : null))
-          .filter((item: any): item is Asset => item !== null);
+          .map((item) => (isRecord(item) ? normalizeAsset(item) : null))
+          .filter((item): item is Asset => item !== null);
         setAssets(normalized);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -202,32 +212,36 @@ export default function HomePage() {
   const hasAssets = assets.length > 0;
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-        <section className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Visao geral dos assets</h1>
-            <p className="max-w-2xl text-sm text-slate-400">
-              Acompanhe o status do robo em tempo real. Cada card resume tendencia, preco atual e parametros operacionais coletados
-              da API em /assets.
-            </p>
-          </div>
+    <>
+      <Head>
+        <title>BOT 2 | Dashboard</title>
+      </Head>
+      <main className="min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
+          <section className="space-y-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Visao geral dos assets</h1>
+              <p className="max-w-2xl text-sm text-slate-400">
+                Acompanhe o status do robo em tempo real. Cada card resume tendencia, preco atual e parametros operacionais coletados
+                da API em /assets.
+              </p>
+            </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-slate-400">
-                <span className="inline-flex h-2 w-2 animate-ping rounded-full bg-cyan-400" />
-                <span>Carregando assets mais recentes...</span>
+            {loading ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <span className="inline-flex h-2 w-2 animate-ping rounded-full bg-cyan-400" />
+                  <span>Carregando assets mais recentes...</span>
+                </div>
+                <LoadingState />
               </div>
-              <LoadingState />
-            </div>
-          ) : error ? (
-            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-              {error}
-            </div>
-          ) : hasAssets ? (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {assets.map((asset) => {
+            ) : error ? (
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                {error}
+              </div>
+            ) : hasAssets ? (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {assets.map((asset) => {
                 const side = asset.side ? sideMap[asset.side.toLowerCase()] ?? asset.side : null;
                 const sideLabel = side ? side.toUpperCase() : null;
                 const normalizedStatus = asset.status ? asset.status.toLowerCase() : null;
@@ -349,5 +363,6 @@ export default function HomePage() {
         </section>
       </div>
     </main>
+  </>
   );
 }
