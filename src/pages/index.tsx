@@ -11,6 +11,9 @@ type Asset = {
   emaDiffPercent: number | null;
   currentPrice: number | null;
   triggerPrice: number | null;
+  tpPrice: number | null;
+  slPrice: number | null;
+  unrealizedPnl: number | null;
   updatedAtBr: string | null;
   candleCrossTimeBr: string | null;
 };
@@ -26,6 +29,13 @@ const smallPriceFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 const percentFormatter = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "USD",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
@@ -84,6 +94,11 @@ const toPercent = (value: number | null) => {
   if (value === null || !Number.isFinite(value)) return "-";
   const formatted = percentFormatter.format(Math.abs(value));
   return `${formatted}%`;
+};
+
+const toCurrency = (value: number | null) => {
+  if (value === null || !Number.isFinite(value)) return "-";
+  return currencyFormatter.format(value).replace("US$", "$");
 };
 
 const toStatusLabel = (status: string | null) => {
@@ -156,6 +171,11 @@ const normalizeAsset = (raw: Record<string, unknown>): Asset | null => {
     emaDiffPercent: parseNumber(raw.emaDiffPercent),
     currentPrice: parseNumber(raw.currentPrice),
     triggerPrice: parseNumber(raw.triggerPrice),
+    tpPrice: parseNumber(raw.tpPrice ?? raw.takeProfitPrice ?? raw["take_profit_price"] ?? raw.tp ?? raw["tp_price"]),
+    slPrice: parseNumber(raw.slPrice ?? raw.stopLossPrice ?? raw["stop_loss_price"] ?? raw.sl ?? raw["sl_price"]),
+    unrealizedPnl: parseNumber(
+      raw.unrealizedPnl ?? raw.unrealizedPnlUsd ?? raw.markPnl ?? raw.mpnl ?? raw["unrealized_pnl"] ?? raw["mpnl"],
+    ),
     updatedAtBr: parseString(raw.updatedAtBr),
     candleCrossTimeBr: parseString(raw.candleCrossTimeBr),
   };
@@ -246,6 +266,7 @@ export default function HomePage() {
                   const sideLabel = side ? side.toUpperCase() : null;
                   const normalizedStatus = asset.status ? asset.status.toLowerCase() : null;
                   const isAwaitingPullback = normalizedStatus === "awaiting_pullback";
+                  const isInPosition = normalizedStatus === "in_position";
                   const awaitingPullbackTone =
                     statusMap["awaiting_pullback"]?.tone ?? "text-slate-300 border-white/15 bg-white/[0.04]";
                   const triggerDiffPercent =
@@ -288,6 +309,18 @@ export default function HomePage() {
                               {toPrice(asset.triggerPrice)}
                             </span>
                           </div>
+                        ) : isInPosition ? (
+                          <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">TP / SL Price</p>
+                            <div className="flex flex-wrap gap-2">
+                              <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-sm font-semibold text-emerald-300">
+                                TP {toPrice(asset.tpPrice)}
+                              </span>
+                              <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 text-sm font-semibold text-rose-300">
+                                SL {toPrice(asset.slPrice)}
+                              </span>
+                            </div>
+                          </div>
                         ) : (
                           <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</p>
@@ -301,7 +334,7 @@ export default function HomePage() {
                           </div>
                         )}
 
-                        {isAwaitingPullback ? (
+                        {isAwaitingPullback || isInPosition ? (
                           <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Side</p>
                             <span
@@ -335,6 +368,20 @@ export default function HomePage() {
                               className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${awaitingPullbackTone}`}
                             >
                               {toPercent(triggerDiffPercent)}
+                            </span>
+                          </div>
+                        ) : isInPosition ? (
+                          <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3">
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Unrealized PnL</p>
+                              <span className="text-[0.65rem] uppercase text-slate-500">Lucro nao realizado</span>
+                            </div>
+                            <span
+                              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${diffTone(
+                                asset.unrealizedPnl,
+                              )}`}
+                            >
+                              {toCurrency(asset.unrealizedPnl)}
                             </span>
                           </div>
                         ) : (
